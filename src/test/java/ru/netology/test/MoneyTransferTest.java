@@ -11,6 +11,7 @@ import ru.netology.page.LoginPage;
 
 import static com.codeborne.selenide.Selenide.open;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MoneyTransferTest {
     private final String firstCardNumber = "5559 0000 0000 0001";
@@ -60,5 +61,18 @@ public class MoneyTransferTest {
         page.updateBalance();
         int actual = page.getBalance(firstCardNumber);
         assertEquals(expected, actual);
+    }
+
+    @Test
+    @DisplayName("Balance cannot be negative")
+    public void shouldNotTransferFromCard0002toCard001() {
+        amount = 20001;
+        DashboardPage page = openDashboard();
+        page.updateBalance();
+//        Перевод стредств (карта отправителя, карта получателя, сумма)
+        page.moneyTransfer(secondCardNumber, firstCardNumber, amount);
+        page.updateBalance();
+        assertTrue(page.getBalance(secondCardNumber) >= 0);
+
     }
 }
