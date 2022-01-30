@@ -1,0 +1,1 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/r1ec6k69se7cdv7h?svg=true)](https://ci.appveyor.com/project/leonidbeltsov/qa23-aqa2-4-task1)
