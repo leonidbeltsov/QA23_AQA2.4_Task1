@@ -14,9 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MoneyTransferTest {
-    private final String firstCardNumber = "5559 0000 0000 0001";
-    private final String secondCardNumber = "5559 0000 0000 0002";
     int amount;
+
 
     @BeforeEach
     void setup() {
@@ -38,29 +37,28 @@ public class MoneyTransferTest {
         DashboardPage page = openDashboard();
         page.updateBalance();
 //        Баланс карты получателя
-        int currentBalance = page.getBalance(secondCardNumber);
-        int expected = currentBalance + amount;
+        int expectedRecipient = page.getBalance(DataHelper.getSecondCardNumber()) + amount;
+//        Баланс карты отправителя
+        int expectedSender = page.getBalance(DataHelper.getFirstCardNumber()) - amount;
 //        Перевод стредств (карта отправителя, карта получателя, сумма)
-        page.moneyTransfer(firstCardNumber, secondCardNumber, amount);
+        page.moneyTransfer(DataHelper.getFirstCardNumber(), DataHelper.getSecondCardNumber(), amount);
         page.updateBalance();
-        int actual = page.getBalance(secondCardNumber);
-        assertEquals(expected, actual);
+        assertEquals(expectedRecipient, page.getBalance(DataHelper.getSecondCardNumber()));
+        assertEquals(expectedSender, page.getBalance(DataHelper.getFirstCardNumber()));
     }
 
     @Test
     @DisplayName("0002 > 0001")
-    public void shouldTransferFromCard0002toCard001() {
-        amount = 5000;
+    public void shouldTransferFromCard0002toCard001v2() {
+        amount = 10;
         DashboardPage page = openDashboard();
         page.updateBalance();
-//        Баланс карты получателя
-        int currentBalance = page.getBalance(firstCardNumber);
-        int expected = currentBalance + amount;
-//        Перевод стредств (карта отправителя, карта получателя, сумма)
-        page.moneyTransfer(secondCardNumber, firstCardNumber, amount);
+        int expectedRecipient = page.getBalance(DataHelper.getFirstCardNumber()) + amount;
+        int expectedSender = page.getBalance(DataHelper.getSecondCardNumber()) - amount;
+        page.moneyTransfer(DataHelper.getSecondCardNumber(), DataHelper.getFirstCardNumber(), amount);
         page.updateBalance();
-        int actual = page.getBalance(firstCardNumber);
-        assertEquals(expected, actual);
+        assertEquals(expectedRecipient, page.getBalance(DataHelper.getFirstCardNumber()));
+        assertEquals(expectedSender, page.getBalance(DataHelper.getSecondCardNumber()));
     }
 
     @Test
@@ -69,10 +67,11 @@ public class MoneyTransferTest {
         amount = 20001;
         DashboardPage page = openDashboard();
         page.updateBalance();
-//        Перевод стредств (карта отправителя, карта получателя, сумма)
-        page.moneyTransfer(secondCardNumber, firstCardNumber, amount);
+        page.moneyTransfer(DataHelper.getFirstCardNumber(), DataHelper.getSecondCardNumber(), amount);
         page.updateBalance();
-        assertTrue(page.getBalance(secondCardNumber) >= 0);
+        assertTrue(page.getBalance(DataHelper.getFirstCardNumber()) >= 0);
 
     }
 }
+
+//java -jar ./artifacts/app-ibank-build-for-testers.jar
